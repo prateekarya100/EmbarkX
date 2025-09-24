@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util" xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- Actual implementation of UserDataProvider -->
+    <bean id="UserDataProvider" class="com.embarkx.EmbarkXProject.loose.UserDatabaseProvider" />
+    <bean id="NewUserDataProvider" class="com.embarkx.EmbarkXProject.loose.NewUserDatabaseProvider" />
+    <bean id="WebDataProvider" class="com.embarkx.EmbarkXProject.loose.WebServiceDatabaseProvider" />
+
+    <!-- Inject dependency into UserManager -->
+    <bean id="UserDataProviderBean" class="com.embarkx.EmbarkXProject.loose.UserManager">
+        <constructor-arg name="userDataProvider" ref="UserDataProvider"/>
+    </bean>
+
+    <bean id="NewUserDataProviderBean" class="com.embarkx.EmbarkXProject.loose.UserManager">
+        <constructor-arg name="userDataProvider" ref="NewUserDataProvider"/>
+    </bean>
+
+    <bean id="WebDataProviderBean" class="com.embarkx.EmbarkXProject.loose.UserManager">
+        <constructor-arg name="userDataProvider" ref="WebDataProvider"/>
+    </bean>
+</beans>
