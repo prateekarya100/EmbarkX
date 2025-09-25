@@ -50,8 +50,10 @@ public class CategoryController {
             responseDTO.setResponse("Category deleted successfully");
             return new ResponseEntity<>(responseDTO, HttpStatus.OK);
         } else {
-            responseDTO.setResponse("Failed to delete category");
-            return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+            responseDTO.setResponse("Failed to delete category with id: " + categoryId);
+            return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
         }
     }
+
+
 }
