@@ -1,0 +1,7 @@
+
+spring:
+  application:
+    name: ecommerce-application
+
+server:
+  port: 9006
