@@ -27,9 +27,15 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public Optional<Category> addCategory(Category category) {
-        category.setCategoryId((long) (categories.size() + 1));
+        // add incremental id to the new category
+        Long newId = categories.stream()
+                .mapToLong(Category::getCategoryId)
+                .max()
+                .orElse(0L) + 1;
+        category.setCategoryId(newId);
         categories.add(category);
-        return Optional.of(category);
+        System.out.println( "new categories :: " + categories);
+      return  Optional.of(category);
     }
 
     @Override
@@ -43,6 +49,17 @@ public class CategoryServiceImpl implements CategoryService{
                     return true;
                 });
 //        return Optional.of(isRemoved);
+    }
+
+    @Override
+    public Optional<Boolean> updateCategory(long categoryId, Category category) {
+        return categories.stream()
+                .filter(cat -> cat.getCategoryId() == categoryId)
+                .findFirst()
+                .map(cat -> {
+                    cat.setCategoryName(category.getCategoryName());
+                    return true;
+                });
     }
 
 

@@ -29,31 +29,44 @@ public class CategoryController {
 
     @PostMapping(value = "/admin/categories")
     public ResponseEntity<CategoryResponseDTO> addCategory(@RequestBody Category category) {
-        Optional<Category> isAdded = categoryService.addCategory(category);
-        CategoryResponseDTO responseDTO = new CategoryResponseDTO();
-        if(isAdded.isPresent()){
-            System.out.println( "updated categories :: " + getAllCategories());
-            responseDTO.setResponse("Category added successfully");
-            return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
-        } else {
-            responseDTO.setResponse("Failed to add category");
-            return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        Optional<Category> optionalCategory = categoryService.addCategory(category);
+        if (optionalCategory.isPresent()){
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new CategoryResponseDTO("Category added successfully"));
+        }else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CategoryResponseDTO("Failed to add category,please try again"));
         }
     }
+
 
     @DeleteMapping(value = "/admin/delete/categories/{categoryId}")
     public ResponseEntity<CategoryResponseDTO> deleteCategory(@PathVariable long categoryId) {
         Optional<Boolean> isDeleted = categoryService.deleteCategory(categoryId);
-        CategoryResponseDTO responseDTO = new CategoryResponseDTO();
-        if(isDeleted.isPresent() && isDeleted.get()){
-            System.out.println( "updated categories :: " + getAllCategories());
-            responseDTO.setResponse("Category deleted successfully");
-            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
-        } else {
-            responseDTO.setResponse("Failed to delete category with id: " + categoryId);
-            return new ResponseEntity<>(responseDTO, HttpStatus.NOT_FOUND);
+        if (isDeleted.isPresent() && isDeleted.get()){
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new CategoryResponseDTO("Category deleted successfully"));
+        }else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new CategoryResponseDTO("Category not found with id: " + categoryId));
         }
     }
 
+    // update category - future enhancement
+    @PutMapping(value = "/admin/update/categories/{categoryId}")
+    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable long categoryId, @RequestBody Category category) {
+        Optional<Boolean> updateCategoryOptional = categoryService.updateCategory(categoryId, category);
+        if (updateCategoryOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(new CategoryResponseDTO("Category updated successfully"));
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new CategoryResponseDTO("Category not found with id: " + categoryId));
+        }
+    }
 
 }

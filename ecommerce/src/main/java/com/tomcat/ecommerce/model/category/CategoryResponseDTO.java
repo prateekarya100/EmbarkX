@@ -1,8 +1,30 @@
 package com.tomcat.ecommerce.model.category;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Data
+
 public class CategoryResponseDTO {
-    private String response;
+    private String responseMessage;
+
+    public CategoryResponseDTO(String responseMessage) {
+        this.responseMessage = responseMessage;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public void setResponseMessage(String responseMessage) {
+        this.responseMessage = responseMessage;
+    }
+
+    @Override
+    public String toString() {
+        return "CategoryResponseDTO{" +
+                "responseMessage='" + responseMessage + '\'' +
+                '}';
+    }
 }
