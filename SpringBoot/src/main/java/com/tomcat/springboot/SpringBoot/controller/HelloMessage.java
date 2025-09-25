@@ -2,10 +2,9 @@ package com.tomcat.springboot.SpringBoot.controller;
 
 import com.tomcat.springboot.SpringBoot.controller.dto.WelcomeBankingDTO;
 import com.tomcat.springboot.SpringBoot.controller.dto.WelcomeDto;
-    import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Objects;
 
 @RestController
@@ -23,12 +22,12 @@ public class HelloMessage {
                 .body(new WelcomeDto("Welcome to Spring Boot Application "+name));
     }
 
-//    @PostMapping(value = "/post-name-by-path-variable/{name}")
-//    public ResponseEntity<WelcomeDto> postNameByPathVariable( @PathVariable("name") String name) {
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(new WelcomeDto("Welcome to Spring Boot Application "+name));
-//    }
+    @PostMapping(value = "/post-name-by-path-variable/{name}")
+    public ResponseEntity<WelcomeDto> postNameByPathVariable( @PathVariable("name") String name) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new WelcomeDto("Welcome to Spring Boot Application "+name));
+    }
 
     @GetMapping(value = "/banking")
     public WelcomeBankingDTO banking() {
