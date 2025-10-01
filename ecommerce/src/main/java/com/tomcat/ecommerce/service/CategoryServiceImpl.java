@@ -1,6 +1,8 @@
 package com.tomcat.ecommerce.service;
 
 import com.tomcat.ecommerce.model.Category;
+import com.tomcat.ecommerce.repository.CategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -9,6 +11,9 @@ import java.util.Optional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService{
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     List<Category> categories = new ArrayList<>(List.of(
             new Category(1L, "Electronics"),
@@ -22,44 +27,37 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public List<Category> getAllCategories() {
-        return categories;
+        return categoryRepository.findAll();
     }
 
     @Override
     public Optional<Category> addCategory(Category category) {
         // add incremental id to the new category
-        Long newId = categories.stream()
-                .mapToLong(Category::getCategoryId)
-                .max()
-                .orElse(0L) + 1;
-        category.setCategoryId(newId);
-        categories.add(category);
-        System.out.println( "new categories :: " + categories);
-      return  Optional.of(category);
+        return categoryRepository.findAll().stream()
+                .filter(cat -> cat.getCategoryName().equalsIgnoreCase(category.getCategoryName()))
+                .findFirst()
+                .or(() -> Optional.of(categoryRepository.save(category)));
     }
 
     @Override
     public Optional<Boolean> deleteCategory(Long categoryId) {
-//        boolean isRemoved = categories.removeIf(category -> category.getCategoryId() == categoryId);
-        return categories.stream()
-                .filter(category -> category.getCategoryId() == categoryId)
+        return categoryRepository.findAll().stream()
+                .filter(cat -> cat.getCategoryId().equals(categoryId))
                 .findFirst()
-                .map(category -> {
-                    categories.remove(category);
+                .map(cat -> {
+                    categoryRepository.deleteById(categoryId);
                     return true;
                 });
-//        return Optional.of(isRemoved);
     }
 
     @Override
     public Optional<Boolean> updateCategory(long categoryId, Category category) {
-        return categories.stream()
-                .filter(cat -> cat.getCategoryId() == categoryId)
-                .findFirst()
-                .map(cat -> {
-                    cat.setCategoryName(category.getCategoryName());
-                    return true;
-                });
+       return categoryRepository.findById(categoryId)
+               .map(cat -> {
+                   cat.setCategoryName(category.getCategoryName());
+                   categoryRepository.save(cat);
+                   return true;
+               });
     }
 
 

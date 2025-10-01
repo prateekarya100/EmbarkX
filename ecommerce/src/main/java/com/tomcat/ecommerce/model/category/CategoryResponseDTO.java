@@ -1,10 +1,5 @@
 package com.tomcat.ecommerce.model.category;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
 
 public class CategoryResponseDTO {
     private String responseMessage;
