@@ -15,15 +15,15 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private CategoryRepository categoryRepository;
 
-    List<Category> categories = new ArrayList<>(List.of(
-            new Category(1L, "Electronics"),
-            new Category(2L, "Books"),
-            new Category(3L, "Clothing") ,
-            new Category(4L, "Home & Kitchen"),
-            new Category(5L, "Sports & Outdoors"),
-            new Category(6L, "Health & Personal Care"),
-            new Category(7L, "Toys & Games")
-    ));
+//    List<Category> categories = new ArrayList<>(List.of(
+//            new Category(1L, "Electronics"),
+//            new Category(2L, "Books"),
+//            new Category(3L, "Clothing") ,
+//            new Category(4L, "Home & Kitchen"),
+//            new Category(5L, "Sports & Outdoors"),
+//            new Category(6L, "Health & Personal Care"),
+//            new Category(7L, "Toys & Games")
+//    ));
 
     @Override
     public List<Category> getAllCategories() {
