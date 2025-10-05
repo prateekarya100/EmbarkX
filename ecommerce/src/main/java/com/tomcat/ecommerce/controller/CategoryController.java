@@ -1,5 +1,6 @@
 package com.tomcat.ecommerce.controller;
 
+import com.tomcat.ecommerce.exception.ResourceNotFoundException;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.model.category.CategoryResponseDTO;
 import com.tomcat.ecommerce.service.CategoryService;
@@ -45,29 +46,19 @@ public class CategoryController {
 
     @DeleteMapping(value = "/admin/delete/categories/{categoryId}")
     public ResponseEntity<CategoryResponseDTO> deleteCategory(@PathVariable long categoryId) {
-        Optional<Boolean> isDeleted = categoryService.deleteCategory(categoryId);
-        if (isDeleted.isPresent() && isDeleted.get()){
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new CategoryResponseDTO("Category deleted successfully"));
-        }else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new CategoryResponseDTO("Category not found with id: " + categoryId));
-        }
+        Optional<Boolean> isDeleted = Optional.ofNullable(categoryService.deleteCategory(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("sorry category not found with the id: " + categoryId+", please try again with valid id")));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new CategoryResponseDTO("category deleted successfully"));
     }
 
     // update category - future enhancement
     @PutMapping(value = "/admin/update/categories/{categoryId}")
     public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable long categoryId, @RequestBody Category category) {
-        Optional<Boolean> updateCategoryOptional = categoryService.updateCategory(categoryId, category);
-        if (updateCategoryOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    .body(new CategoryResponseDTO("Category updated successfully"));
-        }else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new CategoryResponseDTO("Category not found with id: " + categoryId));
-        }
+        Optional<Boolean> updateCategoryOptional = Optional.ofNullable(categoryService.updateCategory(categoryId, category)
+                .orElseThrow(() -> new ResourceNotFoundException("category","categoryId", categoryId))); // custom exception created
+        return ResponseEntity.status(HttpStatus.OK)
+                    .body(new CategoryResponseDTO("category updated successfully"));
     }
 
 }

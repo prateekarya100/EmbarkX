@@ -1,13 +1,17 @@
 package com.tomcat.ecommerce.service;
 
+import com.tomcat.ecommerce.exception.NoCategoryFoundException;
+import com.tomcat.ecommerce.exception.ResourceAlreadyExists;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.repository.CategoryRepository;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService{
@@ -27,16 +31,32 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAll();
+        if(categories.isEmpty()){
+            throw new NoCategoryFoundException("No categories found in the database, please add categories");
+        }
+        return categories;
     }
 
     @Override
     public Optional<Category> addCategory(Category category) {
-        // add incremental id to the new category
-        return categoryRepository.findAll().stream()
-                .filter(cat -> cat.getCategoryName().equalsIgnoreCase(category.getCategoryName()))
-                .findFirst()
-                .or(() -> Optional.of(categoryRepository.save(category)));
+
+        // find if category with same name already exists using stream, if yes then throw exception
+//        categoryRepository.findAll().stream()
+//                .filter(cat->cat.getCategoryName().equalsIgnoreCase(category.getCategoryName()))
+//                .findFirst()
+//                .ifPresent(cat -> {
+//                    throw new ResourceAlreadyExists("category with name '"+category.getCategoryName()+"' already exists, please try with different name");
+//                });
+//        return Optional.of(categoryRepository.save(category));
+
+
+        // find if category with same name already exists using repository method name, if yes then throw exception
+        categoryRepository.findByCategoryName(category.getCategoryName())
+                .ifPresent(cat -> {
+                    throw new ResourceAlreadyExists("category with the name '" + category.getCategoryName() + "' already exists, please try with different name");
+                });
+        return Optional.of(categoryRepository.save(category));
     }
 
     @Override
