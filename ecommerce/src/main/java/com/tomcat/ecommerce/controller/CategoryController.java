@@ -3,6 +3,7 @@ package com.tomcat.ecommerce.controller;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.model.category.CategoryResponseDTO;
 import com.tomcat.ecommerce.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class CategoryController {
     }
 
     @PostMapping(value = "/admin/categories")
-    public ResponseEntity<CategoryResponseDTO> addCategory(@RequestBody Category category) {
+    public ResponseEntity<CategoryResponseDTO> addCategory(@Valid @RequestBody Category category) {
         Optional<Category> optionalCategory = categoryService.addCategory(category);
         if (optionalCategory.isPresent()){
             return ResponseEntity

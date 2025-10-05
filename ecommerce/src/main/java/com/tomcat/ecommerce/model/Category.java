@@ -1,6 +1,7 @@
 package com.tomcat.ecommerce.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
@@ -13,5 +14,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long categoryId;
+    
+    @NotBlank
     private String categoryName;
 }
