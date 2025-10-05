@@ -2,6 +2,8 @@ package com.tomcat.ecommerce.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -16,7 +18,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
     
-    @NotBlank
+    @NotNull(message = "Category name is mandatory field and cannot be blank")
     @Size(min = 4, max = 20, message = "Category name must be between 4 and 20 characters")
     private String categoryName;
 }

@@ -54,11 +54,12 @@ public class CategoryController {
 
     // update category - future enhancement
     @PutMapping(value = "/admin/update/categories/{categoryId}")
-    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable long categoryId, @RequestBody Category category) {
+    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable long categoryId, @Valid @RequestBody Category category) {
         Optional<Boolean> updateCategoryOptional = Optional.ofNullable(categoryService.updateCategory(categoryId, category)
                 .orElseThrow(() -> new ResourceNotFoundException("category","categoryId", categoryId))); // custom exception created
         return ResponseEntity.status(HttpStatus.OK)
                     .body(new CategoryResponseDTO("category updated successfully"));
     }
+
 
 }
