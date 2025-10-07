@@ -50,11 +50,11 @@ public class CategoryController {
     @DeleteMapping(value = "/admin/delete/categories/{categoryId}")
     public ResponseEntity<Response> deleteCategory(@PathVariable long categoryId) {
         Optional<Boolean> isDeleted = Optional.ofNullable(categoryService.deleteCategory(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("sorry category not found with the id: " + categoryId+", please try again with valid id")));
+                .orElseThrow(() -> new ResourceNotFoundException("sorry category not found with the id: " + categoryId+", please try again with valid category id.")));
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new Response("category deleted successfully"));
     }
-    
+
     // update category - future enhancement
     @PutMapping(value = "/admin/update/categories/{categoryId}")
     public ResponseEntity<Response> updateCategory(@PathVariable long categoryId, @Valid @RequestBody CategoryDTO categoryDTO) {
@@ -79,6 +79,7 @@ public class CategoryController {
         }
     }
 
+    
     /* PAGINATION, SORTING, FILTERING, SEARCHING
     * -------------------------------------------
     * pageNumber: 0
