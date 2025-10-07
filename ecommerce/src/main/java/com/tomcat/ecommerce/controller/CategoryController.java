@@ -2,7 +2,8 @@ package com.tomcat.ecommerce.controller;
 
 import com.tomcat.ecommerce.exception.ResourceNotFoundException;
 import com.tomcat.ecommerce.model.Category;
-import com.tomcat.ecommerce.model.category.CategoryResponseDTO;
+import com.tomcat.ecommerce.model.dto.CategoryPaginatedDTO;
+import com.tomcat.ecommerce.model.dto.CategoryResponseDTO;
 import com.tomcat.ecommerce.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,21 +105,17 @@ public class CategoryController {
         ) {
             Page<Category> page = categoryService.fetchCategoriesWithPagination(pageNumber, pageSize);
 
-            Map<String, Object> response = new LinkedHashMap<>(); // insertion order maintained
-            // Metadata first
-            response.put("currentPage", page.getNumber());
-            response.put("pageSize", page.getSize());
-            response.put("totalPages", page.getTotalPages());
-            response.put("totalElements", page.getTotalElements());
-            response.put("isLastPage", page.isLast());
+            CategoryPaginatedDTO categoryPaginatedDTO = new CategoryPaginatedDTO();
+                        categoryPaginatedDTO.setCurrentPage(page.getNumber());
+                        categoryPaginatedDTO.setPageSize(page.getSize());
+                        categoryPaginatedDTO.setTotalPages(page.getTotalPages());
+                        categoryPaginatedDTO.setTotalElements(page.getTotalElements());
+                        categoryPaginatedDTO.setLastPage(page.isLast());
+                        categoryPaginatedDTO.setCategories(page.getContent());
 
-            // Then the actual list
-            response.put("categories", page.getContent());
-
-            return ResponseEntity.ok(response);
+                        return ResponseEntity
+                                .status(HttpStatus.OK)
+                                .body(categoryPaginatedDTO);
         }
-
-
-
 
 }

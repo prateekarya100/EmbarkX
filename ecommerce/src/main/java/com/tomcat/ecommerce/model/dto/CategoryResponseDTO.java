@@ -1,4 +1,4 @@
-package com.tomcat.ecommerce.model.category;
+package com.tomcat.ecommerce.model.dto;
 
 
 public class CategoryResponseDTO {
