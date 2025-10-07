@@ -6,12 +6,12 @@ import com.tomcat.ecommerce.model.category.CategoryResponseDTO;
 import com.tomcat.ecommerce.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -60,6 +60,65 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.OK)
                     .body(new CategoryResponseDTO("category updated successfully"));
     }
+
+    // batch category insertion
+    @PostMapping(value = "/admin/batch/categories")
+    public ResponseEntity<CategoryResponseDTO> addCategories(@Valid @RequestBody List<Category> categories) {
+        List<Category> savedCategories = categoryService.addBatchCategories(categories);
+        if (!savedCategories.isEmpty()){
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new CategoryResponseDTO("Categories added successfully"));
+        }else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new CategoryResponseDTO("Failed to add categories,please try again"));
+        }
+    }
+
+    /* PAGINATION, SORTING, FILTERING, SEARCHING
+    * -------------------------------------------
+    * pageNumber: 0
+    * pageSize: 10
+    * totalPages: 100
+    * totalElements: 1000
+    * content: []
+    * lastPage: true/false
+    * firstPage: true/false
+    * numberOfElements: 10
+    * empty: true/false
+    * sort: {}
+    * sortBy: categoryName
+    * sortDir: asc/desc
+    * filterBy: categoryName
+    * filterValue: Electronics
+    * searchBy: categoryName
+    * */
+
+    // return dto list of categories with api metadata
+    // like pageNumber, pageSize, totalPages, totalElements, lastPage, firstPage, numberOfElements, empty
+        @GetMapping("/public/categories/pagination")
+        public ResponseEntity<?> getCategoriesWithPagination(
+                @RequestParam(defaultValue = "0") int pageNumber,
+                @RequestParam(defaultValue = "5") int pageSize
+        ) {
+            Page<Category> page = categoryService.fetchCategoriesWithPagination(pageNumber, pageSize);
+
+            Map<String, Object> response = new LinkedHashMap<>(); // insertion order maintained
+            // Metadata first
+            response.put("currentPage", page.getNumber());
+            response.put("pageSize", page.getSize());
+            response.put("totalPages", page.getTotalPages());
+            response.put("totalElements", page.getTotalElements());
+            response.put("isLastPage", page.isLast());
+
+            // Then the actual list
+            response.put("categories", page.getContent());
+
+            return ResponseEntity.ok(response);
+        }
+
+
 
 
 }

@@ -4,11 +4,12 @@ import com.tomcat.ecommerce.exception.NoCategoryFoundException;
 import com.tomcat.ecommerce.exception.ResourceAlreadyExists;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.repository.CategoryRepository;
-import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -78,6 +79,36 @@ public class CategoryServiceImpl implements CategoryService{
                    categoryRepository.save(cat);
                    return true;
                });
+    }
+
+    @Override
+    public List<Category> addBatchCategories(List<Category> categories) {
+        List<String> existingCategoryNames =  categoryRepository.findAll().stream()
+                .map(Category::getCategoryName)
+                .toList();
+
+        List<Category> newCategories = categories.stream()
+                .filter(cat -> !existingCategoryNames.contains(cat.getCategoryName()))
+                .collect(Collectors.toList());
+
+        if (newCategories.isEmpty()) {
+            throw new ResourceAlreadyExists("All categories already exist, please try with different names");
+        }
+
+        return categoryRepository.saveAll(newCategories);
+    }
+
+    @Override
+    public Page<Category> fetchCategoriesWithPagination(int pageNumber, int pageSize) {
+       // pagination using stream api
+//         return categoryRepository.findAll().stream()
+//                .skip((long) pageNumber * pageSize)
+//                .limit(pageSize)
+//                .collect(Collectors.toList());
+
+        // pagination using pageable interface
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return categoryRepository.findAll(pageable);
     }
 
 

@@ -37,11 +37,7 @@ public class MyGlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleResourceAlreadyExistsException(ResourceAlreadyExists ex){
         return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.CONFLICT);
     }
-    // add generic exception handler
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGenericException(Exception ex){
-        return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+
 
     // add exception handler for NoCategoryFoundException
     @ExceptionHandler(NoCategoryFoundException.class)
