@@ -79,7 +79,7 @@ public class CategoryController {
         }
     }
 
-    
+
     /* PAGINATION, SORTING, FILTERING, SEARCHING
     * -------------------------------------------
     * pageNumber: 0

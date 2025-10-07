@@ -19,6 +19,6 @@ public class Category {
     private Long categoryId;
     
     @NotNull(message = "Category name is mandatory field and cannot be blank")
-    @Size(min = 2, max = 20, message = "Category name must be between 2 and 20 characters")
+    @Size(min = 2, max = 30, message = "Category name must be between 2 and 30 characters")
     private String categoryName;
 }
