@@ -4,6 +4,7 @@ import com.tomcat.ecommerce.exception.ResourceNotFoundException;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.model.dto.CategoryPaginatedDTO;
 import com.tomcat.ecommerce.model.dto.CategoryResponseDTO;
+import com.tomcat.ecommerce.model.dto.payload.CategoryModelResponseDTO;
 import com.tomcat.ecommerce.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class CategoryController {
 //    }
 
     @GetMapping(value = "/public/categories")
-    public List<Category> getAllCategories() {
+    public CategoryModelResponseDTO getAllCategories() {
         return categoryService.getAllCategories();
     }
 

@@ -3,7 +3,10 @@ package com.tomcat.ecommerce.service;
 import com.tomcat.ecommerce.exception.NoCategoryFoundException;
 import com.tomcat.ecommerce.exception.ResourceAlreadyExists;
 import com.tomcat.ecommerce.model.Category;
+import com.tomcat.ecommerce.model.dto.payload.CategoryModelDTO;
+import com.tomcat.ecommerce.model.dto.payload.CategoryModelResponseDTO;
 import com.tomcat.ecommerce.repository.CategoryRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +23,9 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
 //    List<Category> categories = new ArrayList<>(List.of(
 //            new Category(1L, "Electronics"),
 //            new Category(2L, "Books"),
@@ -31,12 +37,15 @@ public class CategoryServiceImpl implements CategoryService{
 //    ));
 
     @Override
-    public List<Category> getAllCategories() {
+    public CategoryModelResponseDTO getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
         if(categories.isEmpty()){
             throw new NoCategoryFoundException("No categories found in the database, please add categories");
         }
-        return categories;
+        List<CategoryModelDTO> categoryModelDTOS = categories.stream()
+                .map((cat)->modelMapper.map(cat, CategoryModelDTO.class))
+                .toList();
+        return new CategoryModelResponseDTO(categoryModelDTOS);
     }
 
     @Override
