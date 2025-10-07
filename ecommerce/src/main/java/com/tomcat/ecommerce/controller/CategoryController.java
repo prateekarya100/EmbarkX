@@ -3,8 +3,9 @@ package com.tomcat.ecommerce.controller;
 import com.tomcat.ecommerce.exception.ResourceNotFoundException;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.model.dto.CategoryPaginatedDTO;
-import com.tomcat.ecommerce.model.dto.CategoryResponseDTO;
-import com.tomcat.ecommerce.model.dto.payload.CategoryModelResponseDTO;
+import com.tomcat.ecommerce.model.dto.Response;
+import com.tomcat.ecommerce.model.dto.payload.CategoryDTO;
+import com.tomcat.ecommerce.model.dto.payload.CategoryResponseDTO;
 import com.tomcat.ecommerce.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,54 +28,54 @@ public class CategoryController {
 //    }
 
     @GetMapping(value = "/public/categories")
-    public CategoryModelResponseDTO getAllCategories() {
+    public CategoryResponseDTO getAllCategories() {
         return categoryService.getAllCategories();
     }
 
     @PostMapping(value = "/admin/categories")
-    public ResponseEntity<CategoryResponseDTO> addCategory(@Valid @RequestBody Category category) {
-        Optional<Category> optionalCategory = categoryService.addCategory(category);
+    public ResponseEntity<Response> addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        Optional<CategoryDTO> optionalCategory = categoryService.addCategory(categoryDTO);
         if (optionalCategory.isPresent()){
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(new CategoryResponseDTO("Category added successfully"));
+                    .body(new Response("Category added successfully"));
         }else {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new CategoryResponseDTO("Failed to add category,please try again"));
+                    .body(new Response("Failed to add category,please try again"));
         }
     }
 
 
     @DeleteMapping(value = "/admin/delete/categories/{categoryId}")
-    public ResponseEntity<CategoryResponseDTO> deleteCategory(@PathVariable long categoryId) {
+    public ResponseEntity<Response> deleteCategory(@PathVariable long categoryId) {
         Optional<Boolean> isDeleted = Optional.ofNullable(categoryService.deleteCategory(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("sorry category not found with the id: " + categoryId+", please try again with valid id")));
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new CategoryResponseDTO("category deleted successfully"));
+                    .body(new Response("category deleted successfully"));
     }
-
+    
     // update category - future enhancement
     @PutMapping(value = "/admin/update/categories/{categoryId}")
-    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable long categoryId, @Valid @RequestBody Category category) {
-        Optional<Boolean> updateCategoryOptional = Optional.ofNullable(categoryService.updateCategory(categoryId, category)
+    public ResponseEntity<Response> updateCategory(@PathVariable long categoryId, @Valid @RequestBody CategoryDTO categoryDTO) {
+        Optional<Boolean> updateCategoryOptional = Optional.ofNullable(categoryService.updateCategory(categoryId, categoryDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("category","categoryId", categoryId))); // custom exception created
         return ResponseEntity.status(HttpStatus.OK)
-                    .body(new CategoryResponseDTO("category updated successfully"));
+                    .body(new Response("category updated successfully"));
     }
 
     // batch category insertion
     @PostMapping(value = "/admin/batch/categories")
-    public ResponseEntity<CategoryResponseDTO> addCategories(@Valid @RequestBody List<Category> categories) {
+    public ResponseEntity<Response> addCategories(@Valid @RequestBody List<Category> categories) {
         List<Category> savedCategories = categoryService.addBatchCategories(categories);
         if (!savedCategories.isEmpty()){
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(new CategoryResponseDTO("Categories added successfully"));
+                    .body(new Response("Categories added successfully"));
         }else {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new CategoryResponseDTO("Failed to add categories,please try again"));
+                    .body(new Response("Failed to add categories,please try again"));
         }
     }
 

@@ -1,8 +1,8 @@
 package com.tomcat.ecommerce.service;
 
 import com.tomcat.ecommerce.model.Category;
-import com.tomcat.ecommerce.model.dto.CategoryResponseDTO;
-import com.tomcat.ecommerce.model.dto.payload.CategoryModelResponseDTO;
+import com.tomcat.ecommerce.model.dto.payload.CategoryDTO;
+import com.tomcat.ecommerce.model.dto.payload.CategoryResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryService {
-    CategoryModelResponseDTO getAllCategories();
-    Optional<Category> addCategory(Category category);
+    CategoryResponseDTO getAllCategories();
+    Optional<CategoryDTO> addCategory(CategoryDTO categoryDTO);
     Optional<Boolean> deleteCategory(Long categoryId);
-    Optional<Boolean> updateCategory(long categoryId, Category category);
+    Optional<Boolean> updateCategory(long categoryId, CategoryDTO categoryDTO);
 
     // batch insertion of categories
     List<Category> addBatchCategories(@Valid List<Category> categories);

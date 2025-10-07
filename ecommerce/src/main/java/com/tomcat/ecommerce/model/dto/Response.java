@@ -1,10 +1,10 @@
 package com.tomcat.ecommerce.model.dto;
 
 
-public class CategoryResponseDTO {
+public class Response {
     private String responseMessage;
 
-    public CategoryResponseDTO(String responseMessage) {
+    public Response(String responseMessage) {
         this.responseMessage = responseMessage;
     }
 

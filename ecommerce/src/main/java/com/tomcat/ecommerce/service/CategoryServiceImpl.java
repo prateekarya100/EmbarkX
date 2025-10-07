@@ -3,8 +3,8 @@ package com.tomcat.ecommerce.service;
 import com.tomcat.ecommerce.exception.NoCategoryFoundException;
 import com.tomcat.ecommerce.exception.ResourceAlreadyExists;
 import com.tomcat.ecommerce.model.Category;
-import com.tomcat.ecommerce.model.dto.payload.CategoryModelDTO;
-import com.tomcat.ecommerce.model.dto.payload.CategoryModelResponseDTO;
+import com.tomcat.ecommerce.model.dto.payload.CategoryDTO;
+import com.tomcat.ecommerce.model.dto.payload.CategoryResponseDTO;
 import com.tomcat.ecommerce.repository.CategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +37,19 @@ public class CategoryServiceImpl implements CategoryService{
 //    ));
 
     @Override
-    public CategoryModelResponseDTO getAllCategories() {
+    public CategoryResponseDTO getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
         if(categories.isEmpty()){
             throw new NoCategoryFoundException("No categories found in the database, please add categories");
         }
-        List<CategoryModelDTO> categoryModelDTOS = categories.stream()
-                .map((cat)->modelMapper.map(cat, CategoryModelDTO.class))
+        List<CategoryDTO> categoryDTOS = categories.stream()
+                .map((cat)->modelMapper.map(cat, CategoryDTO.class))
                 .toList();
-        return new CategoryModelResponseDTO(categoryModelDTOS);
+        return new CategoryResponseDTO(categoryDTOS);
     }
 
     @Override
-    public Optional<Category> addCategory(Category category) {
+    public Optional<CategoryDTO> addCategory(CategoryDTO categoryDTO) {
 
         // find if category with same name already exists using stream, if yes then throw exception
 //        categoryRepository.findAll().stream()
@@ -58,15 +58,18 @@ public class CategoryServiceImpl implements CategoryService{
 //                .ifPresent(cat -> {
 //                    throw new ResourceAlreadyExists("category with name '"+category.getCategoryName()+"' already exists, please try with different name");
 //                });
-//        return Optional.of(categoryRepository.save(category));
+//        return Optional.of(modelMapper.map(categoryRepository.save(modelMapper.map(category, Category.class)), CategoryModelDTO.class));
 
 
         // find if category with same name already exists using repository method name, if yes then throw exception
-        categoryRepository.findByCategoryName(category.getCategoryName())
+        categoryRepository.findByCategoryName(categoryDTO.getCategoryName())
                 .ifPresent(cat -> {
-                    throw new ResourceAlreadyExists("category with the name '" + category.getCategoryName() + "' already exists, please try with different name");
+                    throw new ResourceAlreadyExists("category with the name '" + categoryDTO.getCategoryName() + "' already exists, please try with different name");
                 });
-        return Optional.of(categoryRepository.save(category));
+        Category categoryEntity = modelMapper.map(categoryDTO, Category.class);
+        Category savedCategory = categoryRepository.save(categoryEntity);
+        CategoryDTO savedCategoryDTO = modelMapper.map(savedCategory, CategoryDTO.class);
+        return Optional.of(savedCategoryDTO);
     }
 
     @Override
@@ -81,10 +84,10 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public Optional<Boolean> updateCategory(long categoryId, Category category) {
+    public Optional<Boolean> updateCategory(long categoryId, CategoryDTO categoryDTO) {
        return categoryRepository.findById(categoryId)
                .map(cat -> {
-                   cat.setCategoryName(category.getCategoryName());
+                   cat.setCategoryName(categoryDTO.getCategoryName());
                    categoryRepository.save(cat);
                    return true;
                });
