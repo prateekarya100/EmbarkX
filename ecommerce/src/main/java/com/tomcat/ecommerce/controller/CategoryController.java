@@ -115,9 +115,11 @@ public class CategoryController {
                         categoryPaginatedDTO.setTotalElements(page.getTotalElements());
                         categoryPaginatedDTO.setLastPage(page.isLast());
                         categoryPaginatedDTO.setCategories(page.getContent());
-
-                        return ResponseEntity
-                                .status(HttpStatus.OK)
+                        if (categoryPaginatedDTO.getCategories().isEmpty()){
+                            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                    .body(new Response("No categories found, please add some categories into database or try again later."));
+                        }
+                        return ResponseEntity.status(HttpStatus.OK)
                                 .body(categoryPaginatedDTO);
         }
 
