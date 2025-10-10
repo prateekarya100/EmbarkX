@@ -13,10 +13,10 @@ import java.util.List;
 @ToString
 public class CategoryResponseDTO {
 //    pageNumber, pageSize, totalPages, totalElements, lastPage,
-//    private String pageNumber;
-//    private String pageSize;
-//    private String totalPages;
-//    private String totalElements;
-//    private String lastPage;
+    private int pageNumber;
+    private int pageSize;
+    private int totalPages;
+    private int totalElements;
+    private boolean lastPage;
     private List<CategoryDTO> content;
 }

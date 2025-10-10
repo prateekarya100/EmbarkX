@@ -11,11 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.modelmapper.Converters.Collection.map;
 
 @Service
 public class CategoryServiceImpl implements CategoryService{
@@ -37,15 +41,29 @@ public class CategoryServiceImpl implements CategoryService{
 //    ));
 
     @Override
-    public CategoryResponseDTO getAllCategories() {
+    public CategoryResponseDTO getAllCategories( int pageNumber, int pageSize, String sortBy, String sortDir) {
+
+        Sort sortByNameAndOrder = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
         List<Category> categories = categoryRepository.findAll();
         if(categories.isEmpty()){
-            throw new NoCategoryFoundException("No categories found in the database, please add categories");
+            throw new NoCategoryFoundException("No categories found in the database, please add some categories");
         }
-        List<CategoryDTO> categoryDTOS = categories.stream()
-                .map((cat)->modelMapper.map(cat, CategoryDTO.class))
-                .toList();
-        return new CategoryResponseDTO(categoryDTOS);
+
+        Pageable pageable = PageRequest.of(pageNumber,pageSize, sortByNameAndOrder);
+        Page<Category> categoryPage = categoryRepository.findAll(pageable);
+        List<CategoryDTO> categoryDTOs = categoryPage.getContent().stream()
+                .map(cat -> modelMapper.map(cat, CategoryDTO.class)).toList();
+
+        CategoryResponseDTO responseDTO = new CategoryResponseDTO();
+        responseDTO.setPageNumber(categoryPage.getNumber());
+        responseDTO.setPageSize(categoryPage.getSize());
+        responseDTO.setTotalPages(categoryPage.getTotalPages());
+        responseDTO.setTotalElements((int) categoryPage.getTotalElements());
+        responseDTO.setLastPage(categoryPage.isLast());
+        responseDTO.setContent(categoryDTOs);
+
+        return responseDTO;
     }
 
     @Override
@@ -111,15 +129,12 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public Page<Category> fetchCategoriesWithPagination(int pageNumber, int pageSize) {
-       // pagination using stream api
-//         return categoryRepository.findAll().stream()
-//                .skip((long) pageNumber * pageSize)
-//                .limit(pageSize)
-//                .collect(Collectors.toList());
+    public Page<Category> fetchCategoriesWithPagination(int pageNumber, int pageSize, String sortBy, String sortDir) {
+
+        Sort sortByNameAndOrder = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         // pagination using pageable interface
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortByNameAndOrder);
         return categoryRepository.findAll(pageable);
     }
 

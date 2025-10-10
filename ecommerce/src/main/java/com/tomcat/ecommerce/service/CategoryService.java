@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryService {
-    CategoryResponseDTO getAllCategories();
+    CategoryResponseDTO getAllCategories(int pageNumber, int pageSize,String sortBy, String sortDir);
     Optional<CategoryDTO> addCategory(CategoryDTO categoryDTO);
     Optional<Boolean> deleteCategory(Long categoryId);
     Optional<Boolean> updateCategory(long categoryId, CategoryDTO categoryDTO);
@@ -18,5 +18,5 @@ public interface CategoryService {
     // batch insertion of categories
     List<Category> addBatchCategories(@Valid List<Category> categories);
 
-    Page<Category> fetchCategoriesWithPagination(int pageNumber, int pageSize);
+    Page<Category> fetchCategoriesWithPagination(int pageNumber, int pageSize, String sortBy, String sortDir);
 }

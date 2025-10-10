@@ -1,5 +1,6 @@
 package com.tomcat.ecommerce.exception;
 
+import com.tomcat.ecommerce.model.dto.ApiResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +42,11 @@ public class MyGlobalExceptionHandler {
 
     // add exception handler for NoCategoryFoundException
     @ExceptionHandler(NoCategoryFoundException.class)
-    public ResponseEntity<Map<String, String>> handleNoCategoryFoundException(NoCategoryFoundException ex){
-        return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> handleNoCategoryFoundException(NoCategoryFoundException ex){
+        return new ResponseEntity<>(
+                new ApiResponse(ex.getMessage(), HttpStatus.NOT_FOUND.toString()),
+                HttpStatus.NOT_FOUND
+        );
     }
 
 }

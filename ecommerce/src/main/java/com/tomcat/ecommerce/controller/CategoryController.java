@@ -1,9 +1,10 @@
 package com.tomcat.ecommerce.controller;
 
+import com.tomcat.ecommerce.constants.AppConstants;
 import com.tomcat.ecommerce.exception.ResourceNotFoundException;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.model.dto.CategoryPaginatedDTO;
-import com.tomcat.ecommerce.model.dto.Response;
+import com.tomcat.ecommerce.model.dto.ApiResponse;
 import com.tomcat.ecommerce.model.dto.payload.CategoryDTO;
 import com.tomcat.ecommerce.model.dto.payload.CategoryResponseDTO;
 import com.tomcat.ecommerce.service.CategoryService;
@@ -28,54 +29,58 @@ public class CategoryController {
 //    }
 
     @GetMapping(value = "/public/categories")
-    public CategoryResponseDTO getAllCategories() {
-        return categoryService.getAllCategories();
+    public CategoryResponseDTO getAllCategories(
+            @RequestParam(value = "pageNumber",defaultValue = AppConstants.DEFAULT_PAGE_NUMBER,required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize",defaultValue = AppConstants.DEFAULT_PAGE_SIZE,required = false) Integer pageSize,
+            @RequestParam(value = "sortBy",defaultValue = AppConstants.DEFAULT_SORT_BY,required = false) String sortBy,
+            @RequestParam(value = "sortDir",defaultValue = AppConstants.DEFAULT_SORT_DIR,required = false) String sortDir){
+        return categoryService.getAllCategories(pageNumber,pageSize,sortBy,sortDir);
     }
 
     @PostMapping(value = "/admin/categories")
-    public ResponseEntity<Response> addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<ApiResponse> addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
         Optional<CategoryDTO> optionalCategory = categoryService.addCategory(categoryDTO);
         if (optionalCategory.isPresent()){
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(new Response("Category added successfully"));
+                    .body(new ApiResponse("Category added successfully",HttpStatus.CREATED.toString()));
         }else {
             return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response("Failed to add category,please try again"));
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .body(new ApiResponse("Failed to add category,please try again",HttpStatus.NOT_ACCEPTABLE.toString()));
         }
     }
 
 
     @DeleteMapping(value = "/admin/delete/categories/{categoryId}")
-    public ResponseEntity<Response> deleteCategory(@PathVariable long categoryId) {
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable long categoryId) {
         Optional<Boolean> isDeleted = Optional.ofNullable(categoryService.deleteCategory(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("sorry category not found with the id: " + categoryId+", please try again with valid category id.")));
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new Response("category deleted successfully"));
+                    .body(new ApiResponse("category deleted successfully",HttpStatus.OK.toString()));
     }
 
     // update category - future enhancement
     @PutMapping(value = "/admin/update/categories/{categoryId}")
-    public ResponseEntity<Response> updateCategory(@PathVariable long categoryId, @Valid @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<ApiResponse> updateCategory(@PathVariable long categoryId, @Valid @RequestBody CategoryDTO categoryDTO) {
         Optional<Boolean> updateCategoryOptional = Optional.ofNullable(categoryService.updateCategory(categoryId, categoryDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("category","categoryId", categoryId))); // custom exception created
         return ResponseEntity.status(HttpStatus.OK)
-                    .body(new Response("category updated successfully"));
+                    .body(new ApiResponse("category updated successfully",HttpStatus.OK.toString()));
     }
 
     // batch category insertion
     @PostMapping(value = "/admin/batch/categories")
-    public ResponseEntity<Response> addCategories(@Valid @RequestBody List<Category> categories) {
+    public ResponseEntity<ApiResponse> addCategories(@Valid @RequestBody List<Category> categories) {
         List<Category> savedCategories = categoryService.addBatchCategories(categories);
         if (!savedCategories.isEmpty()){
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(new Response("Categories added successfully"));
+                    .body(new ApiResponse("Categories added successfully",HttpStatus.CREATED.toString()));
         }else {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response("Failed to add categories,please try again"));
+                    .body(new ApiResponse("Failed to add categories,please try again",HttpStatus.INTERNAL_SERVER_ERROR.toString()));
         }
     }
 
@@ -104,9 +109,10 @@ public class CategoryController {
         @GetMapping("/public/categories/pagination")
         public ResponseEntity<?> getCategoriesWithPagination(
                 @RequestParam(defaultValue = "0") int pageNumber,
-                @RequestParam(defaultValue = "5") int pageSize
-        ) {
-            Page<Category> page = categoryService.fetchCategoriesWithPagination(pageNumber, pageSize);
+                @RequestParam(defaultValue = "5") int pageSize,
+                @RequestParam(defaultValue = "categoryName") String sortBy,
+                @RequestParam(defaultValue = "asc") String sortDir ){
+            Page<Category> page = categoryService.fetchCategoriesWithPagination(pageNumber, pageSize,sortBy,sortDir);
 
             CategoryPaginatedDTO categoryPaginatedDTO = new CategoryPaginatedDTO();
                         categoryPaginatedDTO.setCurrentPage(page.getNumber());
@@ -117,7 +123,9 @@ public class CategoryController {
                         categoryPaginatedDTO.setCategories(page.getContent());
                         if (categoryPaginatedDTO.getCategories().isEmpty()){
                             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                    .body(new Response("No categories found, please add some categories into database or try again later."));
+                                    .body(
+                                            new ApiResponse("No categories found, please add some categories into database or try again later."
+                                            ,HttpStatus.NOT_FOUND.toString()));
                         }
                         return ResponseEntity.status(HttpStatus.OK)
                                 .body(categoryPaginatedDTO);
