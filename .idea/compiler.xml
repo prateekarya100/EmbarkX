@@ -10,7 +10,7 @@
         <module name="ecommerce" />
         <module name="SpringBoot" />
       </profile>
-      <profile name="Annotation profile for EmbarkXProject" enabled="true">
+      <profile name="Annotation profile for media" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -18,6 +18,7 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
         <module name="EmbarkXProject" />
+        <module name="media" />
       </profile>
     </annotationProcessing>
   </component>
@@ -26,6 +27,7 @@
       <module name="EmbarkXProject" options="-parameters" />
       <module name="SpringBoot" options="-parameters" />
       <module name="ecommerce" options="-parameters" />
+      <module name="media" options="-parameters" />
     </option>
   </component>
 </project>
