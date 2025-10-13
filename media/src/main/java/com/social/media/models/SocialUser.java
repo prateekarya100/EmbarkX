@@ -1,5 +1,6 @@
 package com.social.media.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,10 +19,11 @@ public class SocialUser {
     private Long id;
 
     @OneToOne(mappedBy = "user")
-    //@JoinColumn(name = "social_profile_id")
+    @JsonManagedReference
     private SocialProfile socialProfile;
 
     @OneToMany(mappedBy = "socialUser")
+    @JsonManagedReference
     private List<Post> posts = new ArrayList<>();
 
     @ManyToMany
@@ -30,6 +32,7 @@ public class SocialUser {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
+    @JsonManagedReference
     private Set<SocialGroup> groups = new HashSet<>();
 
     @Override

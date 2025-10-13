@@ -1,5 +1,7 @@
 package com.social.media.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +18,7 @@ public class SocialProfile {
 
     @OneToOne
     @JoinColumn(name = "social_user")
+    @JsonBackReference
     private SocialUser user;
 
     public Long getId() {
