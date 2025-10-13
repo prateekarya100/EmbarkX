@@ -1,17 +1,33 @@
 package com.social.media.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class SocialGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //many to many with social users
-    @ManyToMany(mappedBy = "socialGroups")
+    @ManyToMany(mappedBy = "groups")
     private Set<SocialUser> socialUsers = new HashSet<>();
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(id);
+    }
+
+    // Explicit getter to fix compilation
+    public Set<SocialUser> getSocialUsers() {
+        return socialUsers;
+    }
 }

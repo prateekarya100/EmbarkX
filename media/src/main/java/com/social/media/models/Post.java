@@ -9,14 +9,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SocialProfile {
+public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "social_user")
-    private SocialUser user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private SocialUser socialUser;
 
     public Long getId() {
         return id;
@@ -26,11 +26,11 @@ public class SocialProfile {
         this.id = id;
     }
 
-    public SocialUser getUser() {
-        return user;
+    public SocialUser getSocialUser() {
+        return socialUser;
     }
 
-    public void setUser(SocialUser user) {
-        this.user = user;
+    public void setSocialUser(SocialUser socialUser) {
+        this.socialUser = socialUser;
     }
 }
