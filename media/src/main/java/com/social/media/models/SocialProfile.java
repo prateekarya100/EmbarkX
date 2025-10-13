@@ -18,7 +18,8 @@ public class SocialProfile {
 
     @OneToOne
     @JoinColumn(name = "social_user")
-    @JsonBackReference
+//    @JsonBackReference
+    @JsonIgnore
     private SocialUser user;
 
     public Long getId() {

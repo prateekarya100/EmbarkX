@@ -22,7 +22,8 @@ public class SocialGroup {
     private Long id;
 
     @ManyToMany(mappedBy = "groups")
-    @JsonBackReference
+//    @JsonBackReference
+    @JsonIgnore
     private Set<SocialUser> socialUsers = new HashSet<>();
 
     @Override
