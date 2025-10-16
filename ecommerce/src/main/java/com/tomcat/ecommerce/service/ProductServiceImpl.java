@@ -3,13 +3,17 @@ package com.tomcat.ecommerce.service;
 import com.tomcat.ecommerce.exception.ResourceNotFoundException;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.model.Product;
+import com.tomcat.ecommerce.payload.ProductDTO;
+import com.tomcat.ecommerce.payload.ProductResponse;
 import com.tomcat.ecommerce.repository.CategoryRepository;
 import com.tomcat.ecommerce.repository.ProductRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -19,6 +23,9 @@ public class ProductServiceImpl implements ProductService{
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public Optional<Product> addProduct(Long categoryId, Product product) {
@@ -35,7 +42,10 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public Optional<List<Product>> findingAllProducts() {
-        return Optional.of(productRepository.findAll());
+    public ProductResponse findingAllProducts() {
+        List<ProductDTO> productResponses = productRepository.findAll().stream()
+                .map(product -> modelMapper.map(product,ProductDTO.class))
+                .toList();
+       return new ProductResponse(productResponses);
     }
 }
