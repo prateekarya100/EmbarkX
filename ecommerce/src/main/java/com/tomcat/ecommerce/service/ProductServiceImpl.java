@@ -8,6 +8,7 @@ import com.tomcat.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +30,12 @@ public class ProductServiceImpl implements ProductService{
         product.setDiscount((product.getPrice() * 25/100));
         double discountedPrice =(product.getPrice() - (product.getPrice() * 25/100));
         product.setSpecialPrice(discountedPrice);
+        product.setImage(product.getImage());
        return Optional.of(productRepository.save(product));
+    }
+
+    @Override
+    public Optional<List<Product>> findingAllProducts() {
+        return Optional.of(productRepository.findAll());
     }
 }

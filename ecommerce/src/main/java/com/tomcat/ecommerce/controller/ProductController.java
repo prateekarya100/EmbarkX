@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -18,7 +20,8 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping(value = "/admin/categories/{categoryId}")
+    // adding product into product-catalog based on category id by admin
+    @PostMapping(value = "/admin/categories/{categoryId}/product")
     public ResponseEntity<ApiResponse> addProduct(
                                         @RequestBody Product product,
                                         @PathVariable Long categoryId){
@@ -30,5 +33,12 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse("facing issues while adding product, please contact to the author of this service.",HttpStatus.BAD_REQUEST.toString()));
         }
+    }
+
+    // getting all products list at once
+    @GetMapping(value = "/public/products")
+    public ResponseEntity<Optional<List<Product>>> getAllProducts(){
+        Optional<List<Product>> productsOptional = productService.findingAllProducts();
+        return new ResponseEntity<>(productsOptional,HttpStatus.OK);
     }
 }
