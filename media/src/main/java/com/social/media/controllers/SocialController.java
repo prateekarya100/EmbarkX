@@ -29,4 +29,5 @@ public class SocialController {
         socialService.deleteUser(userId);
         return new ResponseEntity<>("Deleted Successfully", HttpStatus.OK);
     }
+
 }
