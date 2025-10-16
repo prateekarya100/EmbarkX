@@ -35,7 +35,7 @@ public class ProductController {
         }
     }
 
-    // getting all products list at once
+    // getting all products list at once, with their category details
     @GetMapping(value = "/public/products")
     public ResponseEntity<Optional<List<Product>>> getAllProducts(){
         Optional<List<Product>> productsOptional = productService.findingAllProducts();
