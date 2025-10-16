@@ -1,8 +1,8 @@
 package com.tomcat.ecommerce.service;
 
 import com.tomcat.ecommerce.model.Category;
-import com.tomcat.ecommerce.model.dto.payload.CategoryDTO;
-import com.tomcat.ecommerce.model.dto.payload.CategoryResponseDTO;
+import com.tomcat.ecommerce.payload.CategoryDTO;
+import com.tomcat.ecommerce.payload.CategoryResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 

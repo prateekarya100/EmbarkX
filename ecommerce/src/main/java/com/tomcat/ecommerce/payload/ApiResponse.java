@@ -1,4 +1,4 @@
-package com.tomcat.ecommerce.model.dto;
+package com.tomcat.ecommerce.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.tomcat.ecommerce.exception;
 
-import com.tomcat.ecommerce.model.dto.ApiResponse;
+import com.tomcat.ecommerce.payload.ApiResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

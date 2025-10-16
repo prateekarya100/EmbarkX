@@ -1,4 +1,4 @@
-package com.tomcat.ecommerce.model.dto;
+package com.tomcat.ecommerce.payload;
 
 import com.tomcat.ecommerce.model.Category;
 import lombok.Data;
