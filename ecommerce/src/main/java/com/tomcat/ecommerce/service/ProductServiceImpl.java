@@ -10,8 +10,11 @@ import com.tomcat.ecommerce.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.swing.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -45,5 +48,12 @@ public class ProductServiceImpl implements ProductService{
                 .map(product -> modelMapper.map(product,ProductDTO.class))
                 .toList();
        return new ProductResponse(productResponses);
+    }
+
+    @Override
+    public ProductResponse getProductsByCategory(Long categoryId) {
+        List<Product> products = productRepository.findProductByCategory_Id(categoryId);
+        return new ProductResponse(products.stream()
+                .map(product -> modelMapper.map(product, ProductDTO.class)).toList());
     }
 }

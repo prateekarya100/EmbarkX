@@ -48,4 +48,10 @@ public class ProductController {
                 .body(response);
     }
 
+    // getting all products based on their category id
+    @GetMapping(value = "/public/categories/{categoryId}/products")
+    public ProductResponse getAllProductsByCategory(@PathVariable Long categoryId){
+       return productService.getProductsByCategory(categoryId);
+    }
+
 }

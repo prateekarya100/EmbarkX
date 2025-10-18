@@ -9,4 +9,6 @@ public interface ProductService {
     Optional<Product> addProduct(Long categoryId, Product product);
 
    ProductResponse findingAllProducts();
+
+    ProductResponse getProductsByCategory(Long categoryId);
 }
