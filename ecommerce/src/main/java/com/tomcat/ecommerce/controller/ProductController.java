@@ -2,6 +2,7 @@ package com.tomcat.ecommerce.controller;
 
 import com.tomcat.ecommerce.model.Product;
 import com.tomcat.ecommerce.payload.ApiResponse;
+import com.tomcat.ecommerce.payload.ProductDTO;
 import com.tomcat.ecommerce.payload.ProductResponse;
 import com.tomcat.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,10 +57,40 @@ public class ProductController {
 
     // getting all products based on search % keyword %
     @GetMapping(value = "/public/products/keyword/{keyword}")
-    public ResponseEntity<ProductResponse> getProductsByKeywordsMatching(@PathVariable String keyword){
+    public ResponseEntity<ProductResponse> getProductsByKeywordsMatching(@PathVariable(required = false) String keyword){
         ProductResponse productResponse = productService.searchProductsByMatchingKeywords(keyword);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .body(productResponse);
     }
 
+    // updating product based on product-id given by admin
+    @PutMapping(value = "/admin/products/{productId}")
+    public ResponseEntity<ApiResponse> updatingProductInfoById(
+                                                                @PathVariable Long productId,
+                                                                @RequestBody Product product){
+        Optional<Product> productOptional = productService.updateExistingProductInfo(productId,product);
+        if(productOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(new ApiResponse("product information updated successfully.",
+                            HttpStatus.ACCEPTED.toString()));
+        }else {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                    .body(new ApiResponse("causing issues while updating product information, please contact with author.",
+                            HttpStatus.NOT_ACCEPTABLE.toString()));
+        }
+    }
+
+    // deleting product from db by admin by product-id
+    @DeleteMapping(value = "/admin/products/{productId}")
+    public ResponseEntity<ApiResponse> deleteProductAndCategoryAssociatedById(@PathVariable Long productId){
+        boolean isDeleted = productService.deleteProductInfoById(productId);
+        if (isDeleted){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ApiResponse("product deleted successfully.",HttpStatus.OK.toString()));
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse("while deletion facing some issues please contact with your website author."
+                            ,HttpStatus.BAD_REQUEST.toString()));
+        }
+    }
 }

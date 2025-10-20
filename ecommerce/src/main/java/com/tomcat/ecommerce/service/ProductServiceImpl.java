@@ -3,18 +3,19 @@ package com.tomcat.ecommerce.service;
 import com.tomcat.ecommerce.exception.ResourceNotFoundException;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.model.Product;
+import com.tomcat.ecommerce.payload.ApiResponse;
 import com.tomcat.ecommerce.payload.ProductDTO;
 import com.tomcat.ecommerce.payload.ProductResponse;
 import com.tomcat.ecommerce.repository.CategoryRepository;
 import com.tomcat.ecommerce.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -28,6 +29,10 @@ public class ProductServiceImpl implements ProductService{
     @Autowired
     private ModelMapper modelMapper;
 
+    // discount calculation
+    double discount=0;
+    double discountedPrice=0;
+
     @Override
     public Optional<Product> addProduct(Long categoryId, Product product) {
         Optional<Category> categoryById = Optional.ofNullable(categoryRepository.findById(categoryId)
@@ -35,8 +40,9 @@ public class ProductServiceImpl implements ProductService{
         product.setCategory(categoryById.get());
 
         // Giving 25% discount on price = 100 * 25 / 100
-        product.setDiscount((product.getPrice() * 25/100));
-        double discountedPrice =(product.getPrice() - (product.getPrice() * 25/100));
+        discount = (product.getPrice() * product.getDiscount()/100);
+        product.setDiscount(discount);
+        discountedPrice =(product.getPrice() - discount);
         product.setSpecialPrice(discountedPrice);
         product.setImage(product.getImage());
        return Optional.of(productRepository.save(product));
@@ -65,11 +71,33 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public ProductResponse searchProductsByMatchingKeywords(String keyword) {
         List<Product> products = productRepository.findByProductNameLikeIgnoreCase("%"+keyword+"%");
-
         List<ProductDTO> productDTOS = products.stream()
                 .map(product -> modelMapper.map(product,ProductDTO.class))
                 .toList();
         return new ProductResponse(productDTOS);
+    }
+
+    @Override
+    public Optional<Product> updateExistingProductInfo(Long productId, Product product) {
+        Product existedProduct = productRepository.findById(productId)
+                .orElseThrow(()->new ResourceNotFoundException("product","productId",productId));
+
+        // BeansUtil setting all field properties in one go without setter mapper
+        BeanUtils.copyProperties(product,existedProduct,"productId"); // ignoreProperty :: productId
+        discount = product.getPrice() * product.getDiscount()/100;
+        existedProduct.setSpecialPrice(existedProduct.getPrice() - discount);
+        productRepository.save(existedProduct);
+        return Optional.of(existedProduct);
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteProductInfoById(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("product", "productId", productId));
+//        productRepository.deleteById(product.getProductId());
+        productRepository.deleteByProductId(productId);
+        return true;
     }
 
 

@@ -13,4 +13,6 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
     // finding products which matching entered keywords by user.
     List<Product> findByProductNameLikeIgnoreCase(String keywords);
+
+    void deleteByProductId(Long productId);
 }
