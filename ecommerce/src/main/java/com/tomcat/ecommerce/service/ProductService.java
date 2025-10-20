@@ -8,7 +8,9 @@ import java.util.Optional;
 public interface ProductService {
     Optional<Product> addProduct(Long categoryId, Product product);
 
-   ProductResponse findingAllProducts();
+    ProductResponse findingAllProducts();
 
-    ProductResponse getProductsByCategory(Long categoryId);
+    ProductResponse searchProductByCategory(Long categoryId);
+
+    ProductResponse searchProductsByMatchingKeywords(String keyword);
 }
