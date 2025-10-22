@@ -11,7 +11,6 @@ import com.tomcat.ecommerce.repository.CategoryRepository;
 import com.tomcat.ecommerce.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -150,6 +149,30 @@ public class ProductServiceImpl implements ProductService{
         productPaginationDTO.setTotalPages(pageProducts.getTotalPages());
         productPaginationDTO.setLastPage(pageProducts.isLast());
         productPaginationDTO.setContents(productDTOS);
+        return productPaginationDTO;
+    }
+
+    @Override
+    public ProductPaginationDTO searchProductByCategory(Long categoryId, int pageNumber, int pageSize, String sortBy, String sortDir) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("category", "categoryId", categoryId));
+        Page<Product> pageProducts =
+                productRepository.findAll(PageRequest.of(pageNumber, pageSize,
+                        sortDir.equalsIgnoreCase("asc") ?
+                                Sort.by(sortBy).ascending() :
+                                Sort.by(sortBy).descending()
+                ));
+       List<Product> products = pageProducts.stream()
+                .map(product ->
+                        modelMapper.map(product,Product.class)).toList();
+       ProductPaginationDTO productPaginationDTO = new ProductPaginationDTO();
+       productPaginationDTO.setPageNumber(pageProducts.getNumber());
+       productPaginationDTO.setPageSize(pageProducts.getSize());
+       productPaginationDTO.setTotalElements(pageProducts.getTotalElements());
+         productPaginationDTO.setTotalPages(pageProducts.getTotalPages());
+         productPaginationDTO.setLastPage(pageProducts.isLast());
+            productPaginationDTO.setContents(products);
+
         return productPaginationDTO;
     }
 

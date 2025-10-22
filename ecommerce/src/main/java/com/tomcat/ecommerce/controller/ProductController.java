@@ -56,10 +56,10 @@ public class ProductController {
     }
 
     // getting all products based on their category id
-    @GetMapping(value = "/public/categories/{categoryId}/products")
-    public ProductResponse getAllProductsByCategory(@PathVariable Long categoryId){
-       return productService.searchProductByCategory(categoryId);
-    }
+//    @GetMapping(value = "/public/categories/{categoryId}/products")
+//    public ProductResponse getAllProductsByCategory(@PathVariable Long categoryId){
+//       return productService.searchProductByCategory(categoryId);
+//    }
 
     // getting all products based on search % keyword %
     @GetMapping(value = "/public/products/keyword/{keyword}")
@@ -126,5 +126,17 @@ public class ProductController {
         ProductPaginationDTO productResponse = productService.getPaginatedProducts(pageNumber, pageSize, sortBy, sortDir);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productResponse);
+    }
+
+    // getting all products based on their category id - paginated
+    @GetMapping(value = "/public/categories/{categoryId}/products")
+    public ResponseEntity<ProductPaginationDTO> getAllProductsByCategory(@PathVariable Long categoryId,
+                                                                   @RequestParam(value = "pageNumber", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER,required = false) int pageNumber,
+                                                                   @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE,required = false) int pageSize,
+                                                                   @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY,required = false) String sortBy,
+                                                                   @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_BY_CATEGORY,required = false) String sortDir) {
+        ProductPaginationDTO response = productService.searchProductByCategory(categoryId, pageNumber, pageSize, sortBy, sortDir);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
 }

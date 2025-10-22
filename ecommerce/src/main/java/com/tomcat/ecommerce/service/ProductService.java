@@ -4,6 +4,7 @@ import com.tomcat.ecommerce.model.Product;
 import com.tomcat.ecommerce.payload.ProductDTO;
 import com.tomcat.ecommerce.payload.ProductPaginationDTO;
 import com.tomcat.ecommerce.payload.ProductResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Optional;
@@ -25,4 +26,5 @@ public interface ProductService {
 
     ProductPaginationDTO getPaginatedProducts(int pageNumber, int pageSize, String sortBy, String sortDir);
 
+    ProductPaginationDTO searchProductByCategory(Long categoryId, int pageNumber, int pageSize, String sortBy, String sortDir);
 }

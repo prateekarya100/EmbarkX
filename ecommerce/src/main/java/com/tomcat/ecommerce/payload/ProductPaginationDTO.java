@@ -1,7 +1,9 @@
 package com.tomcat.ecommerce.payload;
 
 import com.tomcat.ecommerce.model.Product;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
