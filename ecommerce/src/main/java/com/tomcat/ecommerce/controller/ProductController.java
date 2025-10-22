@@ -3,6 +3,7 @@ package com.tomcat.ecommerce.controller;
 import com.tomcat.ecommerce.model.Product;
 import com.tomcat.ecommerce.payload.ApiResponse;
 import com.tomcat.ecommerce.payload.ProductDTO;
+import com.tomcat.ecommerce.payload.ProductPaginationDTO;
 import com.tomcat.ecommerce.payload.ProductResponse;
 import com.tomcat.ecommerce.service.ProductService;
 import jakarta.validation.Valid;
@@ -113,5 +114,14 @@ public class ProductController {
                     .body(new ApiResponse("facing issues while updating product image, please contact with author.",
                             HttpStatus.NOT_ACCEPTABLE.toString()));
         }
+    }
+
+    @GetMapping(value = "/public/products/page/{pageNumber}/size/{pageSize}")
+    public ResponseEntity<ProductPaginationDTO> getPaginatedProducts(
+            @PathVariable int pageNumber,
+            @PathVariable int pageSize){
+        ProductPaginationDTO productResponse = productService.getPaginatedProducts(pageNumber, pageSize);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(productResponse);
     }
 }

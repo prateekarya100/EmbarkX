@@ -5,6 +5,7 @@ import com.tomcat.ecommerce.exception.ResourceNotFoundException;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.model.Product;
 import com.tomcat.ecommerce.payload.ProductDTO;
+import com.tomcat.ecommerce.payload.ProductPaginationDTO;
 import com.tomcat.ecommerce.payload.ProductResponse;
 import com.tomcat.ecommerce.repository.CategoryRepository;
 import com.tomcat.ecommerce.repository.ProductRepository;
@@ -12,13 +13,11 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @Service
@@ -127,7 +126,24 @@ public class ProductServiceImpl implements ProductService{
         return Optional.of(productDTO);
     }
 
+    @Override
+    public ProductPaginationDTO getPaginatedProducts(int pageNumber, int pageSize) {
+        org.springframework.data.domain.Page<Product> pageProducts =
+                productRepository.findAll(PageRequest.of(pageNumber, pageSize));
 
+        List<ProductDTO> productDTOS = pageProducts.getContent().stream()
+                .map(product -> modelMapper.map(product, ProductDTO.class))
+                .toList();
+
+        ProductPaginationDTO productPaginationDTO = new ProductPaginationDTO();
+        productPaginationDTO.setPageNumber(pageProducts.getNumber());
+        productPaginationDTO.setPageSize(pageProducts.getSize());
+        productPaginationDTO.setTotalElements(pageProducts.getTotalElements());
+        productPaginationDTO.setTotalPages(pageProducts.getTotalPages());
+        productPaginationDTO.setLastPage(pageProducts.isLast());
+        productPaginationDTO.setContent(productDTOS);
+        return productPaginationDTO;
+    }
 
 
 }

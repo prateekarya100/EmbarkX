@@ -2,6 +2,7 @@ package com.tomcat.ecommerce.service;
 
 import com.tomcat.ecommerce.model.Product;
 import com.tomcat.ecommerce.payload.ProductDTO;
+import com.tomcat.ecommerce.payload.ProductPaginationDTO;
 import com.tomcat.ecommerce.payload.ProductResponse;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -21,4 +22,6 @@ public interface ProductService {
     boolean deleteProductInfoById(Long productId);
 
     Optional<ProductDTO> updateProductImageByProductId(Long productId, MultipartFile image) throws IOException;
+
+    ProductPaginationDTO getPaginatedProducts(int pageNumber, int pageSize);
 }
