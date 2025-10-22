@@ -1,5 +1,6 @@
 package com.tomcat.ecommerce.controller;
 
+import com.tomcat.ecommerce.constants.AppConstants;
 import com.tomcat.ecommerce.model.Product;
 import com.tomcat.ecommerce.payload.ApiResponse;
 import com.tomcat.ecommerce.payload.ProductDTO;
@@ -116,11 +117,13 @@ public class ProductController {
         }
     }
 
-    @GetMapping(value = "/public/products/page/{pageNumber}/size/{pageSize}")
+    @GetMapping(value = "/public/products/pagination")
     public ResponseEntity<ProductPaginationDTO> getPaginatedProducts(
-            @PathVariable int pageNumber,
-            @PathVariable int pageSize){
-        ProductPaginationDTO productResponse = productService.getPaginatedProducts(pageNumber, pageSize);
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER,required = false) int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE,required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY,required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_BY_CATEGORY,required = false) String sortDir) {
+        ProductPaginationDTO productResponse = productService.getPaginatedProducts(pageNumber, pageSize, sortBy, sortDir);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(productResponse);
     }

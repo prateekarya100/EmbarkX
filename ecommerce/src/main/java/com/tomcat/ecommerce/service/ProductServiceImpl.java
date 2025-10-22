@@ -13,12 +13,16 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+
+import static org.springframework.beans.BeanUtils.*;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -99,7 +103,7 @@ public class ProductServiceImpl implements ProductService{
                 .orElseThrow(()->new ResourceNotFoundException("product","productId",productId));
 
         // BeansUtil setting all field properties in one go without setter mapper
-        BeanUtils.copyProperties(product,existedProduct,"productId"); // ignoreProperty :: productId
+        copyProperties(product,existedProduct,"productId"); // ignoreProperty :: productId
         discount = product.getPrice() * product.getDiscount()/100;
         existedProduct.setSpecialPrice(existedProduct.getPrice() - discount);
         productRepository.save(existedProduct);
@@ -127,12 +131,16 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public ProductPaginationDTO getPaginatedProducts(int pageNumber, int pageSize) {
-        org.springframework.data.domain.Page<Product> pageProducts =
-                productRepository.findAll(PageRequest.of(pageNumber, pageSize));
+    public ProductPaginationDTO getPaginatedProducts(int pageNumber, int pageSize, String sortBy, String sortDir) {
+        Page<Product> pageProducts =
+                productRepository.findAll(PageRequest.of(pageNumber, pageSize,
+                        sortDir.equalsIgnoreCase("asc") ?
+                                Sort.by(sortBy).ascending() :
+                                Sort.by(sortBy).descending()
+                ));
 
-        List<ProductDTO> productDTOS = pageProducts.getContent().stream()
-                .map(product -> modelMapper.map(product, ProductDTO.class))
+        List<Product> productDTOS = pageProducts.getContent().stream()
+                .map(product -> modelMapper.map(product, Product.class))
                 .toList();
 
         ProductPaginationDTO productPaginationDTO = new ProductPaginationDTO();
@@ -141,7 +149,7 @@ public class ProductServiceImpl implements ProductService{
         productPaginationDTO.setTotalElements(pageProducts.getTotalElements());
         productPaginationDTO.setTotalPages(pageProducts.getTotalPages());
         productPaginationDTO.setLastPage(pageProducts.isLast());
-        productPaginationDTO.setContent(productDTOS);
+        productPaginationDTO.setContents(productDTOS);
         return productPaginationDTO;
     }
 

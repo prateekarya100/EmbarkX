@@ -23,5 +23,6 @@ public interface ProductService {
 
     Optional<ProductDTO> updateProductImageByProductId(Long productId, MultipartFile image) throws IOException;
 
-    ProductPaginationDTO getPaginatedProducts(int pageNumber, int pageSize);
+    ProductPaginationDTO getPaginatedProducts(int pageNumber, int pageSize, String sortBy, String sortDir);
+
 }
