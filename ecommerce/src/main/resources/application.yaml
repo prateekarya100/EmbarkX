@@ -24,5 +24,8 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
 
-
-
+# setting for file upload directory
+product:
+  image:
+    upload:
+      dir: images/products

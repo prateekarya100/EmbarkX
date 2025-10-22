@@ -5,10 +5,13 @@ import com.tomcat.ecommerce.payload.ApiResponse;
 import com.tomcat.ecommerce.payload.ProductDTO;
 import com.tomcat.ecommerce.payload.ProductResponse;
 import com.tomcat.ecommerce.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -21,6 +24,7 @@ public class ProductController {
     // adding product into product-catalog based on category id by admin
     @PostMapping(value = "/admin/categories/{categoryId}/product")
     public ResponseEntity<ApiResponse> addProduct(
+                                        @Valid
                                         @RequestBody Product product,
                                         @PathVariable Long categoryId){
         Optional<Product> productOptional = productService.addProduct(categoryId, product);
@@ -66,6 +70,7 @@ public class ProductController {
     // updating product based on product-id given by admin
     @PutMapping(value = "/admin/products/{productId}")
     public ResponseEntity<ApiResponse> updatingProductInfoById(
+                                                                @Valid
                                                                 @PathVariable Long productId,
                                                                 @RequestBody Product product){
         Optional<Product> productOptional = productService.updateExistingProductInfo(productId,product);
@@ -91,6 +96,22 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse("while deletion facing some issues please contact with your website author."
                             ,HttpStatus.BAD_REQUEST.toString()));
+        }
+    }
+
+    // update product-image by product-id
+    @PutMapping(value = "/admin/products/{productId}/image")
+    public ResponseEntity<ApiResponse> updateProductImageById(
+            @PathVariable Long productId,
+            @RequestParam("image") MultipartFile image) throws IOException {
+        Optional<ProductDTO> isProductImageUpdated = productService.updateProductImageByProductId(productId, image);
+        if (isProductImageUpdated.isPresent()) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body(new ApiResponse("newly product image uploaded successfully.", HttpStatus.ACCEPTED.toString()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+                    .body(new ApiResponse("facing issues while updating product image, please contact with author.",
+                            HttpStatus.NOT_ACCEPTABLE.toString()));
         }
     }
 }

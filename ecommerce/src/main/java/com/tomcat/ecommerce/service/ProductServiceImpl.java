@@ -1,9 +1,9 @@
 package com.tomcat.ecommerce.service;
 
+import com.tomcat.ecommerce.exception.ResourceAlreadyExists;
 import com.tomcat.ecommerce.exception.ResourceNotFoundException;
 import com.tomcat.ecommerce.model.Category;
 import com.tomcat.ecommerce.model.Product;
-import com.tomcat.ecommerce.payload.ApiResponse;
 import com.tomcat.ecommerce.payload.ProductDTO;
 import com.tomcat.ecommerce.payload.ProductResponse;
 import com.tomcat.ecommerce.repository.CategoryRepository;
@@ -13,9 +13,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -33,9 +37,12 @@ public class ProductServiceImpl implements ProductService{
     double discount=0;
     double discountedPrice=0;
 
+    @Autowired
+    private UploadImageService uploadImageService;
+
     @Override
     public Optional<Product> addProduct(Long categoryId, Product product) {
-        Optional<Category> categoryById = Optional.ofNullable(categoryRepository.findById(categoryId)
+        Optional<Category> categoryById = Optional.of(categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("category","categoryId",categoryId)));
         product.setCategory(categoryById.get());
 
@@ -45,7 +52,17 @@ public class ProductServiceImpl implements ProductService{
         discountedPrice =(product.getPrice() - discount);
         product.setSpecialPrice(discountedPrice);
         product.setImage(product.getImage());
-       return Optional.of(productRepository.save(product));
+
+        Optional<Product> isDuplicateExist = productRepository.findAll()
+                .stream()
+                .filter(prod-> prod.getProductName().equals(product.getProductName()))
+                .findFirst();
+
+        if (isDuplicateExist.isPresent()){
+            throw new ResourceAlreadyExists("this product is already exists. please try with other product name.");
+        }
+
+        return Optional.of(productRepository.save(product));
     }
 
     @Override
@@ -99,6 +116,18 @@ public class ProductServiceImpl implements ProductService{
         productRepository.deleteByProductId(productId);
         return true;
     }
+
+    @Override
+    public Optional<ProductDTO> updateProductImageByProductId(Long productId, MultipartFile image) throws IOException {
+        Product product = uploadImageService.saveImage(productId, image);
+        productRepository.save(product);
+
+       //  Convert to DTO and return
+        ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+        return Optional.of(productDTO);
+    }
+
+
 
 
 }
