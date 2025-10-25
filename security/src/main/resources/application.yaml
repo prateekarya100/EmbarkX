@@ -1,3 +1,10 @@
 
 server:
     port : 9006
+
+spring:
+    security:
+        # hardcoded one username and their password
+        user:
+            name: admin
+            password: admin
