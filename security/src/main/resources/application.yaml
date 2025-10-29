@@ -1,0 +1,39 @@
+# ===============================
+# Server and Database Config
+# ===============================
+server:
+  port: 9006
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/embarkx?useSSL=false&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+#  Uncomment the following lines to use H2 in-memory database instead of MySQL
+#  datasource:
+
+#    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+#    driver-class-name: org.h2.Driver
+#    username: sa
+#    password: ""
+
+  # ===============================
+  # SQL Initialization
+  # ===============================
+#  sql:
+#    init:
+#      mode: always
+#      schema-locations: classpath:schema.sql
+      # data-locations: classpath:data.sql
+#      platform: h2
+
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+
+#  h2:
+#    console:
+#      enabled: true
+#      path: /h2-console

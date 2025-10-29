@@ -57,6 +57,9 @@ public class SecurityConfig {
                 .password(passwordEncoder().encode("admin"))
                 .roles("ADMIN")
                 .build();
+        System.out.println(user.getPassword());
+        System.out.println(admin.getPassword());
+
 
 //        return new InMemoryUserDetailsManager(user, admin);
 
@@ -66,11 +69,14 @@ public class SecurityConfig {
         if (!jdbcUserDetailsManager.userExists(user.getUsername())) {
             jdbcUserDetailsManager.createUser(user);
         }
+        if (!jdbcUserDetailsManager.userExists(admin.getUsername())) {
+            jdbcUserDetailsManager.createUser(admin);
+        }
         return jdbcUserDetailsManager;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 }
