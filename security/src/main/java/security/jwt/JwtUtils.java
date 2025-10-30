@@ -26,7 +26,8 @@ public class JwtUtils {
     private int jwtExpirationMs = 3600000; // 1 hour
 
     // Method to extract JWT token from Authorization header
-    public String getJwtFromHeader(HttpServletRequest request) {
+    public static String getJwtFromHeader(HttpServletRequest request) {
+        logger.debug("JwtUtils extracting JWT from header for request URI: {}", request.getRequestURI());
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
@@ -36,6 +37,7 @@ public class JwtUtils {
 
     // Method to generate JWT token from username
     public String generateFromUsername(String username) {
+        logger.debug("JwtUtils generating JWT for username: {}", username);
         long now = System.currentTimeMillis();
         return Jwts.builder()
                 .subject(username)
@@ -47,6 +49,7 @@ public class JwtUtils {
 
     // Method to extract username from JWT token
     public String getUsernameFromJwt(String token) {
+        logger.debug("JwtUtils extracting username from JWT token: {}", token);
         return Jwts.parser()
                 .verifyWith((SecretKey) key())
                 .build()
@@ -56,18 +59,20 @@ public class JwtUtils {
 
     // Method to sign JWT token with secret key
     public Key key() {
+        logger.debug("JwtUtils generating secret key for JWT signing");
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretKey));
     }
 
     // Method to validate JWT token
     public boolean validateJwtToken(String authToken) {
+        logger.debug("JwtUtils validating JWT token: {}", authToken);
         try {
             Jwts.parser()
                     .verifyWith((SecretKey) key())
                     .build()
                     .parseSignedClaims(authToken);
             return true;
-        }catch (MalformedJwtException e) {
+        }   catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             logger.error("JWT token is expired: {}", e.getMessage());
@@ -82,6 +87,7 @@ public class JwtUtils {
 
     // Method to check if JWT token is expired
     public boolean isTokenExpired(String token){
+        logger.debug("JwtUtils checking if JWT token is expired: {}", token);
         Date expiration = Jwts.parser()
                 .verifyWith((SecretKey) key())
                 .build()
