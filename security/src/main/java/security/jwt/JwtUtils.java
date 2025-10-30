@@ -80,7 +80,6 @@ public class JwtUtils {
     }
 
 
-
     // Method to check if JWT token is expired
     public boolean isTokenExpired(String token){
         Date expiration = Jwts.parser()
@@ -91,5 +90,5 @@ public class JwtUtils {
         return expiration.before(new Date());
     }
 
-    // Method to check if JWT token is valid
+
 }
