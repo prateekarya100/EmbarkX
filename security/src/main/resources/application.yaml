@@ -37,3 +37,11 @@ spring:
 #    console:
 #      enabled: true
 #      path: /h2-console
+
+
+# ===============================
+#  JWT Token Configuration
+# ===============================
+myapp:
+  jwtSecretKey: tomcatdevsecretkey
+  jwtExpirationMs: 86400000  # 1 day in milliseconds
