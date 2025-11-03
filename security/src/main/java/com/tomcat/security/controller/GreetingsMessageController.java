@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,13 +27,13 @@ import java.util.Map;
 public class GreetingsMessageController {
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtUtils jwtUtils; // what is JwtUtils? JwtUtils is a utility class for generating and validating JWT tokens.
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager; // what is AuthenticationManager? AuthenticationManager is an interface that provides authentication services.
 
     @Autowired
-    private UserDetails userDetails;
+    private UserDetailsService userDetailsService; // what is UserDetailsService? UserDetailsService is an interface that provides user details for authentication.
 
     @GetMapping(value = "/greetings")
     public String getGreetingsMessage() {
@@ -52,19 +53,29 @@ public class GreetingsMessageController {
         return "welcome, admin is able to access.";
     }
 
+    // what this method does is that it authenticates the user request and returns a JWT token if the user is authenticated successfully.
     @PostMapping(value = "/signin")
     public ResponseEntity<?> AuthenticateUserRequest(@RequestBody LoginRequest loginRequest){
       try{
+          // authenticate the user request
           Authentication authentication = authenticationManager.authenticate(
+                  // create a UsernamePasswordAuthenticationToken object with the username and password from the login request
                   new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+          // set the authentication object to the SecurityContextHolder
           SecurityContextHolder.getContext().setAuthentication(authentication);
+
           String jwtToken = jwtUtils.generateFromUsername(loginRequest.getUsername());
+
+          // get the user details from the authentication object
           UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
+          // get the roles from the user details object
           List<String> roles = userDetails.getAuthorities().stream()
                   .map(GrantedAuthority::getAuthority)
                   .toList();
+
+          // return the response request object with the JWT token, username, and roles
           return ResponseEntity.ok(new ResponseRequest(jwtToken,
                   userDetails.getUsername(),
                   roles));
