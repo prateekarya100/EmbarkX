@@ -1,5 +1,7 @@
 package com.tomcat.security.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,12 +23,14 @@ import security.jwt.JwtUtils;
 import security.jwt.LoginRequest;
 import security.jwt.ResponseRequest;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 public class GreetingsMessageController {
 
+    private static final Logger log = LogManager.getLogger(GreetingsMessageController.class);
     @Autowired
     private JwtUtils jwtUtils; // what is JwtUtils? JwtUtils is a utility class for generating and validating JWT tokens.
 
@@ -56,6 +61,8 @@ public class GreetingsMessageController {
     // what this method does is that it authenticates the user request and returns a JWT token if the user is authenticated successfully.
     @PostMapping(value = "/signin")
     public ResponseEntity<?> AuthenticateUserRequest(@RequestBody LoginRequest loginRequest){
+        log.info("Received login request for username: {}", loginRequest.getUsername());
+        log.info("Password: {}", loginRequest.getPassword());
       try{
           // authenticate the user request
           Authentication authentication = authenticationManager.authenticate(
@@ -79,14 +86,18 @@ public class GreetingsMessageController {
           return ResponseEntity.ok(new ResponseRequest(jwtToken,
                   userDetails.getUsername(),
                   roles));
-      }catch (AuthenticationCredentialsNotFoundException exception){
+      }catch (AuthenticationException exception){
+          log.error("Authentication failed: {}", exception.getMessage());
+
+          Map<String, String> notAuthorized = new HashMap<>();
+          notAuthorized.put("error", "Unauthorized");
+          notAuthorized.put("message", exception.getMessage());
           return ResponseEntity
                   .status(HttpStatus.UNAUTHORIZED)
-                  .body(
-                          Map.of("error", "username or password is incorrect, please check your credentials. and try again."));
+                  .body(notAuthorized);
       }
     }
 
-    
+
 
 }

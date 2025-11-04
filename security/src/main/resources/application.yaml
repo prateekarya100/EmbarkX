@@ -43,5 +43,6 @@ spring:
 #  JWT Token Configuration
 # ===============================
 myapp:
-  jwtSecretKey: tomcatdevsecretkey
-  jwtExpirationMs: 86400000  # 1 day in milliseconds
+  jwtSecretKey: secretkey1234567890123456789012345678901234567890123456789012345678901234
+#  jwtExpirationMs: 30000 # 30 seconds in milliseconds
+  jwtExpirationMs: 60000 # 1 day in milliseconds

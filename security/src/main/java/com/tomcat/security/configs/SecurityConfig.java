@@ -20,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import security.jwt.AuthEntryPointJwt;
@@ -49,16 +50,16 @@ public class SecurityConfig {
         return new AuthTokenFilter();
     }
 
-    // AuthEntryPointJwt bean to inject into the SecurityFilterChain
-    @Bean
-    public AuthEntryPointJwt authEntryPointJwt() {
-        return new AuthEntryPointJwt();
-    }
 
     // UserDetailsService to inject users before app starts using command line runner
     @Bean
     public UserDetailsService userDetailsService() {
         return new JdbcUserDetailsManager(dataSource);
+    }
+
+    @Bean
+    public AuthEntryPointJwt unauthorizedHandler() {
+        return new AuthEntryPointJwt();
     }
 
 
@@ -84,7 +85,7 @@ public class SecurityConfig {
                 );
         // Configure exception handling when authentication fails
         http.exceptionHandling(exceptionHandling -> exceptionHandling
-                .authenticationEntryPoint(authEntryPointJwt())
+                .authenticationEntryPoint(unauthorizedHandler())
         );
 
         // Add the authentication token filter before the UsernamePasswordAuthenticationFilter
