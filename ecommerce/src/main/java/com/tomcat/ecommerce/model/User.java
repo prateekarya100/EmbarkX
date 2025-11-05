@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +21,7 @@ import java.util.Set;
             @UniqueConstraint(columnNames = "username"), // user username must be unique
             @UniqueConstraint(columnNames = "email") // user email must be unique
         })
+@ToString(exclude = {"roles", "products", "addresses"}) // exclude roles, products, and addresses from toString so that they are not included in the toString representation
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,4 +48,16 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>(); // every user have single role
+
+    // one user can have many products
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Product> products = new HashSet<>();
+
+    // one user can have many addresses
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_address",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id"))
+    private Set<Address> addresses = new HashSet<>(); // Use Set instead of List to allow multiple addresses with the same user
 }

@@ -7,11 +7,14 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "products")
+@ToString(exclude = {"user", "category"}) // exclude user and category from toString so that they are not included in the toString representation
 public class Product {
 
     @Id
@@ -38,8 +41,14 @@ public class Product {
 
     private double specialPrice; // 75
 
+    // many products can belong to one category
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    // many products can be owned by one user
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

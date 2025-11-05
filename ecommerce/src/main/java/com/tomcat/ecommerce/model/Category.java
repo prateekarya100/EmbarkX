@@ -11,7 +11,6 @@ import lombok.*;
 @Getter
 @Setter
 @AllArgsConstructor @NoArgsConstructor
-@ToString
 @Table(name = "categories")
 public class Category {
     @Id

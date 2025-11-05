@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "roles")
+@ToString(exclude = {"users"}) // exclude users from toString so that they are not included in the toString representation
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
